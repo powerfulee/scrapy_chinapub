@@ -10,7 +10,9 @@ class ChinapubSpider(scrapy.Spider):
     start_urls = ["http://www.china-pub.com/"]
 
     def parse(self, response):
+        #新书专区
         node_list1 = response.xpath('//*[@id="ul_top_0"]/li[not(contains(@class,"overflow_h"))]')
+        #预售专区
         node_list2 = response.xpath('//*[@id="ul_top_1"]/li[not(contains(@class,"overflow_h"))]')
 
         i = 200
@@ -42,8 +44,10 @@ class ChinapubSpider(scrapy.Spider):
                           )
 
     def parse_page(self, response):
+        #获取上层parse方法传递过来的priority优先值
         priority = response.meta["priority"]
 
+        #获取系列图书推荐地址
         node_list = response.xpath('//*[@id="left"]/div[5]/ul[@class="left_t_ul"]/li[contains(@style,"display:none")][position()>1]')
         for node in node_list:
             priority = priority - 2
@@ -60,6 +64,7 @@ class ChinapubSpider(scrapy.Spider):
                           dont_filter=True
                           )
 
+        #发送上层获取的详情页地址
         yield Request(response.meta["item"]['detail_src'],
                       callback=self.detail_page,
                       meta={'item': response.meta["item"]},
