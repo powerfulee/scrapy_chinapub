@@ -1,4 +1,4 @@
-scrapy爬虫抓取chinapub网站
+scrapy爬虫
 ===
 ### 技术栈
 ~~~
