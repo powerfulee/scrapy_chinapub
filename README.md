@@ -22,7 +22,7 @@ IMAGES_THUMBS：填写图片缩略图尺寸
 ~~~
 ### 项目启动步骤
 ~~~
-1、新建demo数据库，执行script目录中chinapub.sql脚本,建立表结构
+1、新建demo数据库，执行chinapub.sql脚本,建立表结构
 2、安装Python及scrapy框架，关于scrapy框架安装方法请自行google
 3、进入chinapub目录，运行scrapy crawl chinapub，将抓取http://www.china-pub.com/首页“新书专区”、“预售专区”及每个详情页“系列图书推荐”数据到chinapub表，并下载图片及生成缩略图到本地
 ~~~
