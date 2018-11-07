@@ -44,6 +44,7 @@ class ImgDownloadPipeline(ImagesPipeline):
             raise DropItem("Item contains no images")
         return item
 
+    #重载file_path方法，将图片进行改名
     def file_path(self, request, response=None, info=None):
         item = request.meta['item']
 
