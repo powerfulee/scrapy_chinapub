@@ -4,6 +4,10 @@ from chinapub.items import ChinapubItem
 from scrapy.selector import Selector
 from scrapy.http import Request
 
+from selenium import webdriver
+import io
+import sys
+
 class ChinapubSpider(scrapy.Spider):
     name = "chinapub"
     allow_domains = ["china-pub.com"]
@@ -47,13 +51,13 @@ class ChinapubSpider(scrapy.Spider):
         #获取上层parse方法传递过来的priority优先值
         priority = response.meta["priority"]
 
-        #获取系列图书推荐地址
-        node_list = response.xpath('//*[@id="left"]/div[5]/ul[@class="left_t_ul"]/li[contains(@style,"display:none")][position()>1]')
+        #获取“购买此商品的人还买了”
+        driver = webdriver.PhantomJS()
+        driver.get(response.meta["item"]["detail_src"])
+        node_list = driver.find_elements_by_xpath('//*[@id="banner_BoughtAlsoBought2"]/div/ul[@class="left_b_line"]/li[2]/dl/dt/a')
         for node in node_list:
-            priority = priority - 2
-
             item = ChinapubItem()
-            detail_src_url = node.xpath('.//div/a/@href').extract_first()
+            detail_src_url = node.get_attribute('href')
             detail_src = detail_src_url[0:detail_src_url.rfind('?')]
             item["detail_src"] = detail_src
 
