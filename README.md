@@ -2,7 +2,7 @@ scrapy爬虫
 ===
 ### 技术栈
 ~~~
-python语言、scrapy框架、xpath
+python语言、scrapy、selenium、PhantomJS、xpath
 ~~~
 ### 开发环境
 ~~~
