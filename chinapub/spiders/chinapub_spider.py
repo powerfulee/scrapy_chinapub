@@ -12,9 +12,9 @@ class ChinapubSpider(scrapy.Spider):
     start_urls = ["http://www.china-pub.com/"]
 
     def parse(self, response):
-        #新书专区
+        # 新书专区
         node_list1 = response.xpath('//*[@id="ul_top_0"]/li[not(contains(@class,"overflow_h"))]')
-        #预售专区
+        # 预售专区
         node_list2 = response.xpath('//*[@id="ul_top_1"]/li[not(contains(@class,"overflow_h"))]')
 
         i = 200
@@ -46,20 +46,21 @@ class ChinapubSpider(scrapy.Spider):
                           )
 
     def parse_page(self, response):
-        #获取上层parse方法传递过来的priority优先值
+        # 获取上层parse方法传递过来的priority优先值
         priority = response.meta["priority"]
 
-        #获取“购买此商品的人还买了”
+        # 获取“购买此商品的人还买了”
+        # 因该栏目内容使用js动态生成，所以需使用selenium+phantomJS获取
         driver = webdriver.PhantomJS()
         driver.get(response.meta["item"]["detail_src"])
         node_list = driver.find_elements_by_xpath('//*[@id="banner_BoughtAlsoBought2"]/div/ul[@class="left_b_line"]/li[2]/dl/dt/a')
         for node in node_list:
-            #对优先级进行递减
+            # 对优先级进行递减
             priority = priority - 2
 
             item = ChinapubItem()
             detail_src_url = node.get_attribute('href')
-            #获取的url是http://product.china-pub.com/7634822?ref=buyagain，对?后字符串进行截取
+            # 获取的url是http://product.china-pub.com/7634822?ref=buyagain，对?后字符串进行截取
             detail_src = detail_src_url[0:detail_src_url.rfind('?')]
             item["detail_src"] = detail_src
 
@@ -70,7 +71,7 @@ class ChinapubSpider(scrapy.Spider):
                           dont_filter=True
                           )
 
-        #发送上层获取的详情页地址
+        # 发送上层获取的详情页地址
         yield Request(response.meta["item"]['detail_src'],
                       callback=self.detail_page,
                       meta={'item': response.meta["item"]},
@@ -86,8 +87,10 @@ class ChinapubSpider(scrapy.Spider):
 
         item["book_id"] = book_id
         image_url = Selector(response).xpath('//*[@id="right"]/div[1]/div[1]/div[2]/dl/dt/a/img/@src').extract_first()
+        # 对图片地址进行截取获得图片扩展名
         extend_file_name = image_url[image_url.rfind('.'):len(image_url)]
 
+        # 获取的图片地址为http://images.china-pub.com/ebook/8185/cover.jpg，将其替换为http://images.china-pub.com/ebook/8185/shupi.jpg获得大图片地址
         big_image_url = [image_url[0:image_url.rfind('/')+1] + 'shupi' + extend_file_name]
 
         item["title"] = Selector(response).xpath('//*[@id="right"]/div[1]/div[1]/h1/text()').extract_first().strip()
