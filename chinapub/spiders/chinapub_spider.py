@@ -5,8 +5,6 @@ from scrapy.selector import Selector
 from scrapy.http import Request
 
 from selenium import webdriver
-import io
-import sys
 
 class ChinapubSpider(scrapy.Spider):
     name = "chinapub"
@@ -56,8 +54,12 @@ class ChinapubSpider(scrapy.Spider):
         driver.get(response.meta["item"]["detail_src"])
         node_list = driver.find_elements_by_xpath('//*[@id="banner_BoughtAlsoBought2"]/div/ul[@class="left_b_line"]/li[2]/dl/dt/a')
         for node in node_list:
+            #对优先级进行递减
+            priority = priority - 2
+
             item = ChinapubItem()
             detail_src_url = node.get_attribute('href')
+            #获取的url是http://product.china-pub.com/7634822?ref=buyagain，对?后字符串进行截取
             detail_src = detail_src_url[0:detail_src_url.rfind('?')]
             item["detail_src"] = detail_src
 
