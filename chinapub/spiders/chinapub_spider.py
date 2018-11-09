@@ -5,6 +5,7 @@ from scrapy.selector import Selector
 from scrapy.http import Request
 
 from selenium import webdriver
+from itertools import chain
 
 class ChinapubSpider(scrapy.Spider):
     name = "chinapub"
@@ -17,30 +18,17 @@ class ChinapubSpider(scrapy.Spider):
         # 预售专区
         node_list2 = response.xpath('//*[@id="ul_top_1"]/li[not(contains(@class,"overflow_h"))]')
 
-        i = 200
-        j = 210
+        i = 21
 
-        for node_1, node_2 in zip(node_list1, node_list2):
-            item1 = ChinapubItem()
-            item1['detail_src'] = node_1.xpath('.//div[1]/a/@href').extract_first()
+        for node in chain(node_list1, node_list2):
+            item = ChinapubItem()
+            item['detail_src'] = node.xpath('.//div[1]/a/@href').extract_first()
 
-            item2 = ChinapubItem()
-            item2['detail_src'] = node_2.xpath('.//div[1]/a/@href').extract_first()
+            i = i - 1
 
-            i = i - 2
-            j = j - 2
-
-            # priority值越大优先级越高
-            yield Request(item1['detail_src'],
+            yield Request(item['detail_src'],
                           callback=self.parse_page,
-                          meta={'item': item1, 'priority': j},
-                          priority=j,
-                          dont_filter=True
-                          )
-
-            yield Request(item2['detail_src'],
-                          callback=self.parse_page,
-                          meta={'item': item2, 'priority': i},
+                          meta={'item': item, 'priority': i},
                           priority=i,
                           dont_filter=True
                           )
@@ -54,10 +42,8 @@ class ChinapubSpider(scrapy.Spider):
         driver = webdriver.PhantomJS()
         driver.get(response.meta["item"]["detail_src"])
         node_list = driver.find_elements_by_xpath('//*[@id="banner_BoughtAlsoBought2"]/div/ul[@class="left_b_line"]/li[2]/dl/dt/a')
-        for node in node_list:
-            # 对优先级进行递减
-            priority = priority - 2
 
+        for node in node_list:
             item = ChinapubItem()
             detail_src_url = node.get_attribute('href')
             # 获取的url是http://product.china-pub.com/7634822?ref=buyagain，对?后字符串进行截取
@@ -75,7 +61,7 @@ class ChinapubSpider(scrapy.Spider):
         yield Request(response.meta["item"]['detail_src'],
                       callback=self.detail_page,
                       meta={'item': response.meta["item"]},
-                      priority=priority-2,
+                      priority=priority,
                       dont_filter=True
                       )
 
