@@ -14,6 +14,11 @@ scrapy
 django
 redis
 ~~~
+### 项目组成
+~~~
+ip_proxies: 代理IP池
+spider：分布式爬虫
+cms：后台管理系统
 ### 项目配置
 ~~~
 新建chinapub数据库，执行script目录下chinapub.sql脚本建表及导入数据
