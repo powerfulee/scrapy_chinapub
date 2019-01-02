@@ -5,6 +5,7 @@ scrapy分布式爬虫
 python, scrapy, django, xpath, selenium, phantomJS
 ~~~
 ![image](https://github.com/powerfulee/scrapy_chinapub/raw/master/public/images/demo1.jpg)
+![image](https://github.com/powerfulee/scrapy_chinapub/raw/master/public/images/demo2.jpg)
 ~~~
 ### 开发环境
 ~~~
